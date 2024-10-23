@@ -9,8 +9,6 @@ export async function GET() {
     .select().limit(4);
 
 
-    // console.log(data);
-
     return NextResponse.json({products: data});
 }
 

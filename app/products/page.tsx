@@ -1,8 +1,9 @@
 "use client";
 
+import { supabase } from "@/lib/supabase"; // Supabase client
+import { useUser } from "@clerk/nextjs"; // Clerk's useUser hook
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/lib/supabase";
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -19,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ProductSearchComponent } from "@/components/product-search";
 
 type Product = {
   id: number;
@@ -32,6 +34,7 @@ const columnHelper = createColumnHelper<Product>();
 const page = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const getProducts = async () => {
@@ -107,12 +110,21 @@ const page = () => {
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
-        pageSize: 8,
+        pageSize: 10,
       },
     },
   });
 
-  const addToCheckout = (productId: number) => {
+  const addToCheckout = async (productId: number) => {
+    const { user } = useUser();
+
+    if (!user) {
+      console.error("No user available");
+      return;
+    }
+
+    const { error } = await supabase.from("cart_items").insert({});
+
     const quantity = quantities[productId] || 0;
     if (quantity > 0) {
       setProducts(
@@ -123,15 +135,20 @@ const page = () => {
         )
       );
       setQuantities((prev) => ({ ...prev, [productId]: 0 }));
+
       // In a real app, you'd also update the checkout state here
+
       console.log(`Added ${quantity} of product ${productId} to checkout`);
     }
   };
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Products</h1>
-      <div className="rounded-md border">
+      <div className="flex justify-between">
+        <h1 className="text-3xl font-bold">Products</h1>
+        <ProductSearchComponent />
+      </div>
+      <div className="rounded-md border mt-6">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
