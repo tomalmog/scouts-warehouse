@@ -22,8 +22,7 @@ export default function Home() {
 
   return (
     <div>
-      <h1></h1>
-      {process.env.NEXT_PUBLIC_SUPABASE_URL} Hello
+      <h1>GO TO PRODUCTS PAGE</h1>
     </div>
   );
 }

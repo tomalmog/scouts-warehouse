@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
 
 import {
   ClerkProvider,
@@ -120,6 +121,7 @@ export default function RootLayout({
               </div>
             </aside>
             <main className="flex-1 overflow-y-auto p-8">{children}</main>
+            <Analytics />
           </div>
         </body>
       </html>
